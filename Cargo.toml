@@ -1,0 +1,13 @@
+[package]
+name = "sha-poc"
+version = "0.1.0"
+authors = ["yuki-js <20838151+yuki-js@users.noreply.github.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+streamsha = "0.1.0"
+hex-literal = "0.2.1"
+hex-slice = "0.1.4"
+lazy_static = "1.4.0"
