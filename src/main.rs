@@ -1,7 +1,7 @@
 use hex_literal::hex;
 use streamsha::hash_state::{HashState, Sha256HashState};
 use streamsha::traits::{Resumable, StreamHasher};
-use streamsha::Sha256;
+use streamsha::{Sha256, Sha1};
 extern crate hex_slice;
 #[macro_use]
 extern crate lazy_static;
@@ -49,6 +49,15 @@ fn main() {
     } else {
         println!("ハッシュ値が一致しません。失敗です。");
     }
+
+    println!("--------");
+    let pubkeyhash = calculate_pubkey_sha1();
+    println!("公開鍵SHA-1ハッシュ: {:x?}", pubkeyhash);
+    if &pubkeyhash[..] == &SUBJ_KEY_ID[..] {
+        println!("公開鍵ハッシュが一致しました。成功です。");
+    } else {
+        println!("公開鍵ハッシュが一致しません。失敗です。");
+    }
 }
 
 /// 電子証明書の全文をハッシュ化する
@@ -89,5 +98,11 @@ fn calculate_server_hash(state: HashState) -> [u8; 32] {
 
     // 最終ブロックを計算し、ハッシュ処理を完了させ、ハッシュ値を返す
     let hash = resumed.finish();
+    hash
+}
+fn calculate_pubkey_sha1() -> [u8; 20] {
+    let mut hasher = Sha1::new();
+    hasher.update(&PUBKEY);
+    let hash = hasher.finish();
     hash
 }
