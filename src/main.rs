@@ -26,39 +26,6 @@ lazy_static! {
     static ref SUBJ_KEY_ID: &'static [u8] = &AUTH_CERT[1277..=1296];
 
 }
-fn main() {
-    let original = calculate_original_hash();
-    println!("全文のハッシュ値: {:x?}", original);
-    let client_hashstate = calculate_client_hash();
-    if let HashState::Sha256(client_state) = &client_hashstate {
-        println!("出力された状態: {{");
-        println!("\tHの値: {:x?}", client_state.h);
-        println!("\t入力の合計サイズ: {}", client_state.message_len);
-        println!(
-            "\t余りのデータ: {:x?}",
-            &client_state.current_block[..client_state.block_len]
-        );
-        println!("}}");
-    } else {
-        panic!("SHA-256ステートではありません。失敗です。");
-    }
-    let server_hash = calculate_server_hash(client_hashstate);
-    println!("ノード運用者が計算したハッシュ: {:x?}", original);
-    if original == server_hash {
-        println!("ハッシュ値が一致しました。成功です。");
-    } else {
-        println!("ハッシュ値が一致しません。失敗です。");
-    }
-
-    println!("--------");
-    let pubkeyhash = calculate_pubkey_sha1();
-    println!("公開鍵SHA-1ハッシュ: {:x?}", pubkeyhash);
-    if &pubkeyhash[..] == &SUBJ_KEY_ID[..] {
-        println!("公開鍵ハッシュが一致しました。成功です。");
-    } else {
-        println!("公開鍵ハッシュが一致しません。失敗です。");
-    }
-}
 
 /// 電子証明書の全文をハッシュ化する
 fn calculate_original_hash() -> [u8; 32] {
@@ -106,3 +73,39 @@ fn calculate_pubkey_sha1() -> [u8; 20] {
     let hash = hasher.finish();
     hash
 }
+
+fn main() {
+    let original = calculate_original_hash();
+    println!("全文のハッシュ値: {:x?}", original);
+    let client_hashstate = calculate_client_hash();
+    if let HashState::Sha256(client_state) = &client_hashstate {
+        println!("出力された状態: {{");
+        println!("\tHの値: {:x?}", client_state.h);
+        println!("\t入力の合計サイズ: {}", client_state.message_len);
+        println!(
+            "\t余りのデータ: {:x?}",
+            &client_state.current_block[..client_state.block_len]
+        );
+        println!("}}");
+    } else {
+        panic!("SHA-256ステートではありません。失敗です。");
+    }
+    let server_hash = calculate_server_hash(client_hashstate);
+    println!("ノード運用者が計算したハッシュ: {:x?}", original);
+    if original == server_hash {
+        println!("ハッシュ値が一致しました。成功です。");
+    } else {
+        println!("ハッシュ値が一致しません。失敗です。");
+    }
+
+    println!("--------");
+    let pubkeyhash = calculate_pubkey_sha1();
+    println!("公開鍵SHA-1ハッシュ: {:x?}", pubkeyhash);
+    if &pubkeyhash[..] == &SUBJ_KEY_ID[..] {
+        println!("公開鍵ハッシュが一致しました。成功です。");
+    } else {
+        println!("公開鍵ハッシュが一致しません。失敗です。");
+    }
+}
+
+
