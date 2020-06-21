@@ -40,7 +40,7 @@ fn calculate_original_hash() -> [u8; 32] {
     hash
 }
 
-/// クライアントが処理すべき部分を想定している。シリアル番号を含んだデータを読んでから中断して状態を返す。入力サイズ(バイト)が64で割り切れない場合、余りの入力データが状態に含まれる。
+/// クライアントが処理すべき部分を想定している。シリアル番号を含んだデータを読んでから中断してハッシュステートを返す。入力サイズ(バイト)が64で割り切れない場合、余りの入力データがハッシュステートに含まれる。
 fn calculate_client_hash() -> HashState {
     // ハッシュに必要な構造体を生成
     let mut hasher = Sha256::new();
@@ -52,9 +52,9 @@ fn calculate_client_hash() -> HashState {
     state
 }
 
-/// ノード運用者が処理する部分を想定している。状態を受け取って、処理を再開する。
+/// ノード運用者が処理する部分を想定している。ハッシュステートを受け取って、処理を再開する。
 fn calculate_server_hash(state: HashState) -> [u8; 32] {
-    // 中断した時の状態を復元する
+    // 中断した時のハッシュステートを復元する
     let mut resumed = Sha256::resume(state).expect("復元失敗！");
 
     // 公開鍵をハッシュする
@@ -79,7 +79,7 @@ fn main() {
     println!("全文のハッシュ値: {:x?}", original);
     let client_hashstate = calculate_client_hash();
     if let HashState::Sha256(client_state) = &client_hashstate {
-        println!("出力された状態: {{");
+        println!("出力されたハッシュステート: {{");
         println!("\tHの値: {:x?}", client_state.h);
         println!("\t入力の合計サイズ: {}", client_state.message_len);
         println!(
